@@ -22,7 +22,13 @@ var context = canvas.getContext('2d')!;
 canvas.width = window.innerWidth * 0.7;
 canvas.height = window.innerHeight;
 
-let scale = canvas.width / 1920;
+// Controls
+const resetBtn = document.querySelector('.control__reset')
+const scrollUpBtn = document.querySelector('.control__up')
+const scrollDownBtn = document.querySelector('.control__down')
+
+let scale = 1;
+let originalScale = 1;
 
 let originX = 0;
 let originY = 0;
@@ -48,6 +54,7 @@ const image = new Image();
 image.src = bgImage;
 image.onload = function () {
   scale = canvas.width / image.naturalWidth;
+  originalScale = scale;
   render();
 };
 
@@ -214,6 +221,11 @@ function screenToRealY(number: number) {
 }
 
 function render() {
+  if (resetBtn) {
+    resetBtn.classList.toggle('control__reset--show', scale !== originalScale);
+  }
+
+
   context.clearRect(0, 0, canvas.width, canvas.height);
   // context.clae
 
@@ -242,6 +254,10 @@ fromEvent(window, 'resize').pipe(
   })
 ).subscribe();
 
+function resetScale() {
+  scale = originalScale;
+}
+
 function resetPosition() {
   originX = 0;
   originY = 0;
@@ -256,3 +272,38 @@ function resetPosition() {
 }
 
 /* Add Buttons */
+// fromEvent<>(canvas, 'click').pipe(
+
+// )
+
+/* Control Items */
+
+// Reset button
+if (resetBtn) {
+  fromEvent(resetBtn, 'click').pipe(
+    tap(() => {
+      resetScale();
+      resetPosition();
+      render();
+    })
+  ).subscribe();
+
+}
+
+if (scrollDownBtn) {
+  fromEvent(scrollDownBtn, 'click').pipe(
+    tap(() => {
+      screenOriginY -= 200;
+      render();
+    })
+  ).subscribe();
+}
+
+if (scrollUpBtn) {
+  fromEvent(scrollUpBtn, 'click').pipe(
+    tap(() => {
+      screenOriginY += 200;
+      render();
+    })
+  ).subscribe();
+}
