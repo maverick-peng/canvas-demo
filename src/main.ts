@@ -37,7 +37,7 @@ interface Mouse {
   bounds?: DOMRect;
 }
 
-const mouse: Mouse = {
+let mouse: Mouse = {
   screenX: 0,
   screenY: 0,
   realX: 0,
@@ -47,6 +47,7 @@ const mouse: Mouse = {
 const image = new Image();
 image.src = bgImage;
 image.onload = function () {
+  scale = canvas.width / image.naturalWidth;
   render();
 };
 
@@ -137,42 +138,62 @@ fromEvent<TouchEvent>(canvas, 'touchstart')
       updateScreenCoords(event.touches[0].clientX, event.touches[0].clientY);
       mouse.realX = screenToRealX(mouse.screenX);
       mouse.realY = screenToRealY(mouse.screenY);
-
-
+    }),
+    switchMap(event => {
+      
       if (event.touches.length === 2) {
         originalDistance = Math.hypot(
-          event.touches[0].pageX - event.touches[1].pageX,
-          event.touches[0].pageY - event.touches[1].pageY
+          event.touches[0].clientX - event.touches[1].clientX,
+          event.touches[0].clientY - event.touches[1].clientY
         );
       }
-    }),
-    switchMap(event => iif(
-      () => event.touches.length === 2,
-      // pinch
-      fromEvent<TouchEvent>(canvas, 'touchmove').pipe(
-        tap(innerEvent => {
-          const distance = Math.hypot(
-            innerEvent.touches[0].pageX - innerEvent.touches[1].pageX,
-            innerEvent.touches[0].pageY - innerEvent.touches[1].pageY
-          );
+      const startScale = scale;
 
-          scale = (distance / originalDistance);
+      return iif(
+        () => event.touches.length === 2,
+        // pinch
+        fromEvent<TouchEvent>(canvas, 'touchmove', { passive: false }).pipe(
+          tap(innerEvent => {
+            const distance = Math.hypot(
+              innerEvent.touches[0].clientX - innerEvent.touches[1].clientX,
+              innerEvent.touches[0].clientY - innerEvent.touches[1].clientY
+            );
 
-          render();
-        }),
-        takeUntil(fromEvent(canvas, 'mouseend'))
-      ),
-      // slide
-      fromEvent<TouchEvent>(canvas, 'touchmove').pipe(
-        tap(innerEvent => 
-          handleDrag(innerEvent.touches[0].clientX, innerEvent.touches[0].clientY)
+            // update scale according to distance of fingers
+            scale = startScale * (distance / originalDistance);
+
+            const middleX = (innerEvent.touches[0].clientX + innerEvent.touches[1].clientX) / 2;
+            const middleY = (innerEvent.touches[0].clientY + innerEvent.touches[1].clientY) / 2;
+            updateScreenCoords(middleX, middleY);
+            mouse.realX = screenToRealX(mouse.screenX);
+            mouse.realY = screenToRealY(mouse.screenY);
+            console.log(mouse);
+      
+            originX = mouse.realX;
+            originY = mouse.realY;
+            screenOriginX = mouse.screenX;
+            screenOriginY = mouse.screenY;
+      
+            mouse.realX = screenToRealX(mouse.screenX);
+            mouse.realY = screenToRealY(mouse.screenY);
+      
+            render();
+          }),
         ),
+        // slide
+        fromEvent<TouchEvent>(canvas, 'touchmove').pipe(
+          tap(innerEvent => 
+            handleDrag(innerEvent.touches[0].clientX, innerEvent.touches[0].clientY)
+          )
+        )
+      ).pipe(
         takeUntil(fromEvent(canvas, 'touchend')),
         takeUntil(fromEvent(canvas, 'touchcancel'))
       )
-    )),
-
-  ).subscribe();
+    }),
+  ).subscribe(() => {}, () => {}, () => {
+    alert('complete')
+  });
 
 /* Coordinates trasformation functions */
 
@@ -218,4 +239,26 @@ function render() {
   context.roundRect(realToScreenX(194), realToScreenY(350), zoom(100), zoom(100), zoom(10));
 }
 
+fromEvent(window, 'resize').pipe(
+  tap(() => {
+    canvas.width = window.innerWidth;
+    scale = canvas.width / image.naturalWidth;
+    resetPosition();
+    render();
+  })
+).subscribe();
 
+function resetPosition() {
+  originX = 0;
+  originY = 0;
+  screenOriginX = 0;
+  screenOriginY = 0;
+  mouse = {
+    screenX: 0,
+    screenY: 0,
+    realX: 0,
+    realY: 0
+  }
+}
+
+/* Add Buttons */
