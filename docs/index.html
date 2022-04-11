@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/panzoom-canvas-demo/assets/favicon.63a26457.svg" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
-    />
-    <title>Vite App</title>
-    
-    <script type="module" crossorigin src="/panzoom-canvas-demo/assets/index.efb6fd8f.js"></script>
-    <link rel="stylesheet" href="/panzoom-canvas-demo/assets/index.7873bd5e.css">
-  </head>
-  <body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/panzoom-canvas-demo/assets/favicon.63a26457.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+  <title>Vite App</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script type="module" crossorigin src="/panzoom-canvas-demo/assets/index.10910b90.js"></script>
+  <link rel="stylesheet" href="/panzoom-canvas-demo/assets/index.3975ec14.css">
+</head>
+
+<body>
+  <div class="canvas__wrapper">
+    <ul class="control__list">
+      <li class="control__item"> <button class="control__reset"><i class="fa-solid fa-arrow-rotate-right"></i></button>
+      </li>
+      <li class="control__item"> <button class="control__up"><i class="fa-solid fa-arrow-up-long"></i></button></li>
+      <li class="control__item"> <button class="control__down"><i class="fa-solid fa-arrow-down-long"></i></button>
+      </li>
+    </ul>
     <canvas id="canvas"></canvas>
-    <!-- <script type="module" src="/src/main.ts"></script> -->
-    
-  </body>
+  </div>
+  
+</body>
+
 </html>
