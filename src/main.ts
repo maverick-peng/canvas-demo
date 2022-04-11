@@ -61,6 +61,7 @@ function updateScreenCoords(clientX: number, clientY: number) {
   mouse.screenY = clientY - mouse.bounds.top;
 }
 
+
 function handleDrag(clientX: number, clientY: number) {
   const lastX = mouse.realX;
   const lastY = mouse.realY;
@@ -77,6 +78,21 @@ function handleDrag(clientX: number, clientY: number) {
   mouse.realY = screenToRealY(mouse.screenY);
 
   render();
+}
+
+function handleZoom(clientX: number, clientY: number) {
+  updateScreenCoords(clientX, clientY);
+
+  mouse.realX = screenToRealX(mouse.screenX);
+  mouse.realY = screenToRealY(mouse.screenY);
+
+  originX = mouse.realX;
+  originY = mouse.realY;
+  screenOriginX = mouse.screenX;
+  screenOriginY = mouse.screenY;
+
+  mouse.realX = screenToRealX(mouse.screenX);
+  mouse.realY = screenToRealY(mouse.screenY);
 }
 
 // drag
@@ -111,19 +127,7 @@ fromEvent<WheelEvent>(canvas, 'wheel', { passive: false })
         scale = Math.max(0.1, scale * (1 / 1.1)); // zoom out is inverse of zoom in
       }
 
-      updateScreenCoords(event.clientX, event.clientY);
-      mouse.realX = screenToRealX(mouse.screenX);
-      mouse.realY = screenToRealY(mouse.screenY);
-      console.log(mouse);
-
-      originX = mouse.realX;
-      originY = mouse.realY;
-      screenOriginX = mouse.screenX;
-      screenOriginY = mouse.screenY;
-
-      mouse.realX = screenToRealX(mouse.screenX);
-      mouse.realY = screenToRealY(mouse.screenY);
-
+      handleZoom(event.clientX, event.clientY);
       render();
     })
   
@@ -162,21 +166,11 @@ fromEvent<TouchEvent>(canvas, 'touchstart')
             // update scale according to distance of fingers
             scale = startScale * (distance / originalDistance);
 
+            // get the mid-point of two fingers
             const middleX = (innerEvent.touches[0].clientX + innerEvent.touches[1].clientX) / 2;
             const middleY = (innerEvent.touches[0].clientY + innerEvent.touches[1].clientY) / 2;
-            updateScreenCoords(middleX, middleY);
-            mouse.realX = screenToRealX(mouse.screenX);
-            mouse.realY = screenToRealY(mouse.screenY);
-            console.log(mouse);
-      
-            originX = mouse.realX;
-            originY = mouse.realY;
-            screenOriginX = mouse.screenX;
-            screenOriginY = mouse.screenY;
-      
-            mouse.realX = screenToRealX(mouse.screenX);
-            mouse.realY = screenToRealY(mouse.screenY);
-      
+
+            handleZoom(middleX, middleY);
             render();
           }),
         ),
