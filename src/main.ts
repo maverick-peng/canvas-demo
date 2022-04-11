@@ -19,7 +19,7 @@ import { fromEvent, iif, switchMap, takeUntil, tap } from 'rxjs';
 
 var canvas = document.querySelector<HTMLCanvasElement>('canvas')!;
 var context = canvas.getContext('2d')!;
-canvas.width = window.innerWidth * 0.7;
+canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // Controls
@@ -248,7 +248,13 @@ function render() {
 fromEvent(window, 'resize').pipe(
   tap(() => {
     canvas.width = window.innerWidth;
+
+    // reset scale to fill screen
     scale = canvas.width / image.naturalWidth;
+
+    // save the new original scale
+    originalScale = scale;
+
     resetPosition();
     render();
   })

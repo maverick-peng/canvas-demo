@@ -10,6 +10,7 @@
 ul, li {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .canvas__wrapper {
@@ -38,4 +39,32 @@ ul, li {
   background-color: rgba(238, 238, 238, 0.505);
   font-size: 1rem;
   box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+  touch-action: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media only screen and (max-width: 600px) {
+
+  .control__list {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: inherit;
+    right: inherit;
+    height: 30px;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .control__item {
+    margin: 0;
+    flex-grow: 1;
+  }
+  .control__item button {
+    width: 100%;
+    border-radius: 0;
+  }
 }
